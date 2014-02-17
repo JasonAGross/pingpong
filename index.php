@@ -1,6 +1,6 @@
-<?php include_once('header.php') ?>
-
 <?php
+	
+	require_once('config.php');
 
 	$con=mysqli_connect("localhost", $dbUser, $dbPass, $dbTable);
 
@@ -9,17 +9,25 @@
 		echo "Failed to connect to MySQL: " . mysqli_connect_error();
 	}
 
+	?>
+	<script type="text/javascript">
+		var emails = [];
+	</script>
+
+	<?php
 	// Pull registered users to see if this user has an account or needs to sign up
 	$result = mysqli_query($con,"SELECT Email FROM Players");
-	$row = mysqli_fetch_array($result);
-?>
+	while($row = mysqli_fetch_array($result)) {
+		?>
 
-<script type="text/javascript">
-	var emails = [<?php print_r(json_encode($row[Email])) ?>];
-</script>
+		<script type="text/javascript">
+			emails.push(<?php print_r(json_encode($row[Email])) ?>);
+		</script>
 
-<?php
+		<?php
+	}
 
+	// If a post has been made to the page then we have a new registration to send to the DB
     if('POST' == $_SERVER['REQUEST_METHOD']) {
 
 		mysqli_query($con, "INSERT INTO Players (Name, Email) VALUES ('$_POST[name]','$_POST[email]')");
@@ -30,6 +38,8 @@
     }
 
 ?>
+
+<?php include_once('header.php') ?>
 
 <div class="wrapper loginPage">
 	<h1>Healthx Ping Pong League</h1>
