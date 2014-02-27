@@ -33,8 +33,8 @@
 		mysqli_query($con, "INSERT INTO Players (Name, Email) VALUES ('$_POST[name]','$_POST[email]')");
 
         mysqli_close($con);
-		header("Location: dashboard.php");
-		die();
+		echo "<script language='javascript' type='text'/javascript'>location.href='dashboard.php'</script>";
+    	exit();
     }
 
 ?>

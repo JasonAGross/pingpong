@@ -1,7 +1,6 @@
 <?php include_once('header.php') ?>
 
 <div class="wrapper dashboard">
-	<h1>Healthx Ping Pong League - Dashboard</h1>
 	<nav class="primaryNav">
 		<ul>
 			<li><a href="#">My Dashboard</a></li>
@@ -10,6 +9,8 @@
 			<li><a href="#">History</a></li>
 		</ul>
 	</nav>
+	
+	<h1>HxPPL - Dashboard</h1>
 
 	<div class="seasonInfo">
 		<h3>Season Snapshot</h3>
@@ -26,6 +27,20 @@
 				</td>
 				<td>
 					Matches Remaining
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Season 1
+				</td>
+				<td>
+					14-4
+				</td>
+				<td>
+					3
+				</td>
+				<td>
+					2
 				</td>
 			</tr>
 		</table>
@@ -45,12 +60,26 @@
 					Trend
 				</td>
 			</tr>
+			<tr>
+				<td>
+					18-8
+				</td>
+				<td>
+					.6331 (5)
+				</td>
+				<td>
+					.4401 (12)
+				</td>
+				<td>
+					Lost 2
+				</td>
+			</tr>
 		</table>
 
 		<h3>My Actions</h3>
-		<a href="#">Report a Match</a>
-		<a href="#">Issue a Ladder Challenge</a>
-		<a href="#">Signup For A League</a>
+		<a href="#" class="dashboardAction"><span class="buttonIcon icon-signup"></span>Report a Match</a>
+		<a href="#" class="dashboardAction"><span class="buttonIcon icon-hammer"></span>Issue a Ladder Challenge</a>
+		<a href="#" class="dashboardAction"><span class="buttonIcon icon-trophy"></span>Signup For A League</a>
 	</div>
 </div>
 
