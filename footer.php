@@ -31,7 +31,7 @@
 			}
 
 			function signinCallback(authResult) {
-				if (authResult['status']['signed_in']) {
+				if (authResult['status']['signed_in'] && $('.auth').length > 0) {
 					// Update the app to reflect a signed in user
 					// Hide the sign-in button now that the user is authorized, for example:
 					$('.auth').hide();
@@ -58,6 +58,29 @@
 							$('#regName').attr('value', resp.displayName);
 							$('#userImg').attr('src',resp.image.url);
 							$('#fName').html(resp.name.givenName);
+						});
+					});
+				} else if (authResult['status']['signed_in']) {
+					// Logged into a sub-page
+					gapi.client.load('plus','v1', function(){
+						var request = gapi.client.plus.people.get({
+							'userId': 'me'
+						});
+						request.execute(function(resp) {
+							for(i=0;i<resp.emails.length;i++) {
+								if (resp.emails[i].type == 'account') {
+									$.ajax({
+										type: 'post',
+										data: {
+											activeUser: resp.emails[i].value
+										},
+										success: function(data) {
+											var userData = $.parseJSON(data);
+											console.log(userData.Email);
+										}
+									});
+								}
+							}
 						});
 					});
 				} else {

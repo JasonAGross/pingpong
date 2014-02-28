@@ -164,7 +164,6 @@ nav ul {
 .primaryNav ul li a {
     display: block;
     padding: .5em;
-    font-size: 125%;
     color: #fff;
     text-decoration: none;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.9);
@@ -180,6 +179,7 @@ nav ul {
 
 .dataTable {
     width: 100%;
+    border-collapse: separate;
     margin-bottom: 2em;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
 }
@@ -188,7 +188,11 @@ nav ul {
     background: #fff;
     padding: .5em;
     border-right: 1px solid #51cd9d;
-    border-bottom: 1px solid #51cd9d;
+    border-bottom: 1px solid #51cd9d;;
+}
+
+.dataTable tr td:first-child {
+    border-left: 1px solid #51cd9d;
 }
 
 .dataTable .header td {
@@ -198,22 +202,16 @@ nav ul {
     font-size: 1em;
     color: #333;
     padding: 1em;
+    border-left: none;
+    border-top: 1px solid #64e1b0;
     box-shadow: inset 0 20px 20px -10px rgba(255, 255, 255, .5);
 }
 
-.dataTable tr td:first-child {
-    border-top: 1px solid #51cd9d;
-}
-
-.dataTable tr:first-child td {
-    border-left: 1px solid #51cd9d;
-}
-
-.dataTable tr:first-child td:first-child {
+.dataTable .header td:first-child {
     border-top-left-radius: 10px;
 }
 
-.dataTable tr:last-child td:first-child {
+.dataTable .header td:last-child {
     border-top-right-radius: 10px;
 }
 
@@ -249,14 +247,7 @@ nav ul {
     margin-top: 1em;
 }
 
-.leagueTable tr, .ladderTable tr {
-    display: table-cell;
-    list-style: none;
-}
-
 .leagueTable td, .ladderTable td {
-    display: list-item;
-    height: 50px;
     text-align: center;
     font-size: 1.5em;
     font-weight: bold;

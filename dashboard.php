@@ -1,3 +1,23 @@
+<?php
+	
+	require_once('config.php');
+
+	if ($_POST['activeUser']) {
+		$user = $_POST['activeUser'];
+		$con=mysqli_connect("localhost", $dbUser, $dbPass, $dbTable);
+
+		$result = mysqli_query($con,"SELECT * FROM Players WHERE Email = '$user'");
+		// $userInfo = Array();
+		while($row = mysqli_fetch_array($result)) {
+			// array_push($userInfo, $row);
+			echo json_encode($row);
+		}
+		// echo json_encode($userInfo);
+		exit;
+	}
+
+?>
+
 <?php include_once('header.php') ?>
 
 <div class="wrapper dashboard">

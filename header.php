@@ -12,6 +12,7 @@
 		<meta name="google-signin-clientid" content="93325758235-6q0k0rmvr972lnnl5fgorrk85vjpngrj.apps.googleusercontent.com" />
 		<meta name="google-signin-scope" content="profile email" />
 		<meta name="google-signin-cookiepolicy" content="single_host_origin" />
+		<meta name="google-signin-callback" content="signinCallback" />
 
 		<link rel="stylesheet" href="css/normalize.min.css">
 		<link rel="stylesheet" href="css/main.css">
