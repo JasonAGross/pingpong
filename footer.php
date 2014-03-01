@@ -6,6 +6,13 @@
 		<script src="js/main.js"></script>
 
 		<script type="text/javascript">
+
+			var userData = {
+				playerInfo: [],
+				matchInfo: [],
+				history: []
+			};
+
 			(function() {
 				var po = document.createElement('script'); 
 				po.type = 'text/javascript'; 
@@ -61,6 +68,9 @@
 						});
 					});
 				} else if (authResult['status']['signed_in']) {
+					if ($('.auth').length > 0) {
+						window.location('dashboard.php');
+					}
 					// Logged into a sub-page
 					gapi.client.load('plus','v1', function(){
 						var request = gapi.client.plus.people.get({
@@ -75,8 +85,7 @@
 											activeUser: resp.emails[i].value
 										},
 										success: function(data) {
-											var userData = $.parseJSON(data);
-											console.log(userData.Email);
+											userData.playerInfo.push($.parseJSON(data));
 										}
 									});
 								}
@@ -90,6 +99,7 @@
 					//   "access_denied" - User denied access to your app
 					//   "immediate_failed" - Could not automatically log in the user
 					console.log('Sign-in state: ' + authResult['error']);
+					window.location = 'index.php';
 				}
 			}
 
