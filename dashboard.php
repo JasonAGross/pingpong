@@ -4,15 +4,34 @@
 
 	if ($_POST['activeUser']) {
 		$user = $_POST['activeUser'];
+		$userID = '';
+		$playerInfo = array();
+		$matchInfo = array();
+		$history = array();
 		$con=mysqli_connect("localhost", $dbUser, $dbPass, $dbTable);
 
-		$result = mysqli_query($con,"SELECT * FROM Players WHERE Email = '$user'");
-		// $userInfo = Array();
-		while($row = mysqli_fetch_array($result)) {
-			// array_push($userInfo, $row);
-			echo json_encode($row);
+		$playerResult = mysqli_query($con,"SELECT * FROM Players WHERE Players.Email = '$user' LIMIT 1");
+		while($row = mysqli_fetch_assoc($playerResult)) {
+			$playerInfo = $row;
+			$userID = $row['PlayerID'];
 		}
-		// echo json_encode($userInfo);
+
+		$matchResult = mysqli_query($con,"SELECT * FROM Games WHERE ChallengerID = '$userID' OR DefenderID = '$userID' ORDER BY PlayedOn DESC");
+		while($row = mysqli_fetch_assoc($matchResult)) {
+			$matchInfo[] = $row;
+		}
+
+		$historyResult = mysqli_query($con,"SELECT * FROM History WHERE PlayerID = '$userID'");
+		while($row = mysqli_fetch_assoc($historyResult)) {
+			$history[] = $row;
+		}
+
+		$combined = array(
+			"playerInfo" => $playerInfo,
+			"matchInfo" => $matchInfo,
+			"history" => $history
+		);
+		echo json_encode($combined);
 		exit;
 	}
 
@@ -40,7 +59,7 @@
 					League Enrollment
 				</td>
 				<td>
-					Record
+					League Record
 				</td>
 				<td>
 					Rank
@@ -50,17 +69,13 @@
 				</td>
 			</tr>
 			<tr>
-				<td>
-					Season 1
+				<td id="enrollment">
 				</td>
-				<td>
-					14-4
+				<td id="leagueRecord">
 				</td>
-				<td>
-					3
+				<td id="rank">
 				</td>
-				<td>
-					2
+				<td id="matches">
 				</td>
 			</tr>
 		</table>
@@ -68,7 +83,7 @@
 		<table cellpadding="0" cellspacing="0" class="dataTable ladderTable">
 			<tr class="header">
 				<td>
-					Record
+					Ladder Record
 				</td>
 				<td>
 					RPI
@@ -81,17 +96,13 @@
 				</td>
 			</tr>
 			<tr>
-				<td>
-					18-8
+				<td id="ladderRecord">
 				</td>
-				<td>
-					.6331 (5)
+				<td id="rpi">
 				</td>
-				<td>
-					.4401 (12)
+				<td id="sos">
 				</td>
-				<td>
-					Lost 2
+				<td id="trend">
 				</td>
 			</tr>
 		</table>
