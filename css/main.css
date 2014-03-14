@@ -20,6 +20,14 @@ body {
     line-height: 1.4;
 }
 
+a, a:visited, a:active {
+    color: #3ca77d;
+}
+
+a:hover {
+    color: #51cd9d;
+}
+
 ::-moz-selection {
     background: #b3d4fc;
     text-shadow: none;
@@ -155,21 +163,20 @@ nav ul {
 
 .primaryNav {
     width: 100%;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
 }
 
 .primaryNav ul li {    
-    background: #252726;
+    background: #fff;
 }
 
 .primaryNav ul li a {
     display: block;
     padding: .5em;
     font-size: 125%;
-    color: #fff;
     text-decoration: none;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.9);
-    border-top: 1px solid rgba(255, 255, 255, .15);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+    text-align: center;
+    border-bottom: 1px solid #51cd9d;
     transition: .25s;
 }
 
@@ -202,7 +209,7 @@ nav ul {
 }
 
 .dataTable tr td:first-child {
-    border-top: 1px solid #51cd9d;
+    border-top: 1px solid #64e1b0;
 }
 
 .dataTable tr:first-child td {
@@ -270,7 +277,6 @@ nav ul {
     background: #fff;
     text-decoration: none;
     text-align: center;
-    color: #51cd9d;
     border: 1px solid #51cd9d;
     border-top: 1px solid #64e1b0;
     border-radius: 10px;
@@ -288,6 +294,27 @@ nav ul {
 
 @media only screen and (min-width: 600px) {
 
+    .primaryNav ul {
+        background: #fff;
+        text-align: center;
+        border-bottom: 1px solid #51cd9d;
+    }
+
+    .primaryNav ul li {
+        display: inline-block;
+    }
+
+    .primaryNav ul li a {
+        padding: 1em 2em;
+        border: none;
+        box-shadow: inset 0 -20px 20px -10px rgba(60, 167, 125, 0.20);
+    }
+
+    .primaryNav ul li a:hover {
+        padding: 1em 2em;
+        box-shadow: inset 0 -20px 20px -10px rgba(60, 167, 125, 0.35);
+    }
+
     .leagueTable tr, .ladderTable tr {
         display: table-row;
     }
@@ -301,7 +328,7 @@ nav ul {
     }
 
     .dataTable .header td {
-        border-top: 1px solid #51cd9d;
+        border-top: 1px solid #64e1b0;
     }
 
     .dataTable tr td:first-child {
@@ -329,7 +356,7 @@ nav ul {
     }
 
     .dataTable tr:first-child td:first-child {
-        border-top: 1px solid #51cd9d;
+        border-top: 1px solid #64e1b0;
         border-left: 1px solid #51cd9d;
     }
 
@@ -343,16 +370,10 @@ nav ul {
 
 @media only screen and (min-width: 1000px) {
 
-    .primaryNav {
-        width: 23%;
-        float: left;
-        margin: 0 1%;
-    }
-
-    .seasonInfo {
-        width: 73%;
-        float: left;
-        margin: 0 1%;
+    .wrapper {
+        width: 98%;
+        max-width: 1000px;
+        margin: auto;
     }
 
 }

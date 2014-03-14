@@ -9,6 +9,7 @@ var userData = {};
 	s.parentNode.insertBefore(po, s);
 })();
 
+/*
 function render() {
 
 	// Additional params including the callback, the rest of the params will
@@ -23,6 +24,7 @@ function render() {
 		gapi.auth.signIn(additionalParams); // Will use page level configuration
 	});
 }
+*/
 
 var callbackRun = true;
 
@@ -78,9 +80,9 @@ function signinCallback(authResult) {
 									activeUser: resp.emails[i].value
 								},
 								success: function(data) {
-									userData = $.parseJSON(data);
+									// userData = $.parseJSON(data);
 									if ($('.dashboard').length > 0) {
-										buildDashboard();
+										// buildDashboard();
 									}
 									return;
 								}
@@ -101,65 +103,43 @@ function signinCallback(authResult) {
 	}
 }
 
-function buildDashboard() {
-	var PID = userData.playerInfo.PlayerID;
-	// League Dashboard
-	if (userData.LeagueSeason) {
-		$('#enrollment').html('Season' + userData.LeagueSeason);
-	} else {
-		$('#enrollment').html('N/A');
-	}
-
-	var leagueWins = 0;
-	var leagueLosses = 0;
-	var leaguePending = 0;
-	var ladderWins = 0;
-	var ladderLosses = 0;
-	for (var i = 0; i < userData.matchInfo.length; i++) {
-		if(userData.matchInfo[i].MatchType == 'League' && userData.matchInfo[i].Status == 'Complete') {
-			if (userData.matchInfo[i].ChallengerID == PID && userData.matchInfo[i].ChallengerScore > userData.matchInfo[i].DefenderScore || userData.matchInfo[i].DefenderID == PID && userData.matchInfo[i].ChallengerScore < userData.matchInfo[i].DefenderScore) {
-				leagueWins++;
+function buildRecord(Player, Type, Matches) {
+	var wins = 0;
+	var losses = 0;
+	for (var i = 0; i < Matches.length; i++) {
+		if(Matches[i].MatchType == Type && Matches[i].Status == 'Complete') {
+			if (Matches[i].ChallengerID == Player && Matches[i].ChallengerScore > Matches[i].DefenderScore || Matches[i].DefenderID == Player && Matches[i].ChallengerScore < Matches[i].DefenderScore) {
+				wins++;
 			} else {
-				leagueLosses++;
+				losses++;
 			}
 		}
-		if(userData.matchInfo[i].MatchType == 'Ladder' && userData.matchInfo[i].Status == 'Complete') {
-			if (userData.matchInfo[i].ChallengerID == PID && userData.matchInfo[i].ChallengerScore > userData.matchInfo[i].DefenderScore || userData.matchInfo[i].DefenderID == PID && userData.matchInfo[i].ChallengerScore < userData.matchInfo[i].DefenderScore) {
-				ladderWins++;
-			} else {
-				ladderLosses++;
-			}
-		}
-		if(userData.matchInfo[i].MatchType == 'League' && userData.matchInfo[i].Status == 'Pending') {
-			leaguePending++;
-		}
 	}
+	return wins + '-' + losses;
+}
 
-	$('#leagueRecord').html(leagueWins + '-' + leagueLosses);
-	$('#matches').html(leaguePending);
-
-	// Ladder Dashboard
-	$('#ladderRecord').html(ladderWins + '-' + ladderLosses);
-
+function getRPIValue(callback, Player, Season) {
 	$.ajax({
 		type: 'post',
 		url: 'ladder.php',
 		data: {
-			getRPIUser: PID,
-			season: userData.playerInfo.LadderSeason
+			getRPIUser: Player,
+			season: Season
 		},
 		success: function(data) {
-			$('#rpi').html(data);
+			callback(data);
 		}
 	});
+}
 
+function getTrend(Player, Type, Matches) {
 	var trend = '';
 	var trendCount = 0;
-	for (var i = 0; i < userData.matchInfo.length; i++) {
+	for (var i = 0; i < Matches.length; i++) {
 		if (trend.length > 0) {
-			if(userData.matchInfo[i].MatchType == 'Ladder' && userData.matchInfo[i].Status == 'Complete') {
+			if(Matches[i].MatchType == Type && Matches[i].Status == 'Complete') {
 				var tempTrend = '';
-				if (userData.matchInfo[i].ChallengerID == PID && userData.matchInfo[i].ChallengerScore > userData.matchInfo[i].DefenderScore || userData.matchInfo[i].DefenderID == PID && userData.matchInfo[i].ChallengerScore < userData.matchInfo[i].DefenderScore) {
+				if (Matches[i].ChallengerID == Player && Matches[i].ChallengerScore > Matches[i].DefenderScore || Matches[i].DefenderID == Player && Matches[i].ChallengerScore < Matches[i].DefenderScore) {
 					tempTrend = 'Won ';
 				} else {
 					tempTrend = 'Lost ';
@@ -171,8 +151,8 @@ function buildDashboard() {
 				}
 			}
 		} else {
-			if(userData.matchInfo[i].MatchType == 'Ladder' && userData.matchInfo[i].Status == 'Complete') {
-				if (userData.matchInfo[i].ChallengerID == PID && userData.matchInfo[i].ChallengerScore > userData.matchInfo[i].DefenderScore || userData.matchInfo[i].DefenderID == PID && userData.matchInfo[i].ChallengerScore < userData.matchInfo[i].DefenderScore) {
+			if(Matches[i].MatchType == Type && Matches[i].Status == 'Complete') {
+				if (Matches[i].ChallengerID == Player && Matches[i].ChallengerScore > Matches[i].DefenderScore || Matches[i].DefenderID == Player && Matches[i].ChallengerScore < Matches[i].DefenderScore) {
 					trend = 'Won ';
 					trendCount++;
 				} else {
@@ -182,22 +162,85 @@ function buildDashboard() {
 			}
 		}
 	}
-	$('#trend').html(trend + trendCount);
+	return trend + ' ' + trendCount;
+}
+
+function buildDashboard(rpiResp) {
+	var PID = userData.playerInfo.PlayerID;
+	// League Dashboard
+	if (userData.LeagueSeason) {
+		$('#enrollment').html('Season' + userData.LeagueSeason);
+	} else {
+		$('#enrollment').html('N/A');
+	}
+
+	var leaguePending = 0;
+	for (var i = 0; i < userData.matchInfo.length; i++) {
+		if(userData.matchInfo[i].MatchType == 'League' && userData.matchInfo[i].Status == 'Pending') {
+			leaguePending++;
+		}
+	}
+	var leagueRecord = buildRecord(PID, 'League', userData.matchInfo);
+	var ladderRecord = buildRecord(PID, 'Ladder', userData.matchInfo);
+
+	$('#leagueRecord').html(leagueRecord);
+	$('#matches').html(leaguePending);
+
+	// Ladder Dashboard
+	$('#ladderRecord').html(ladderRecord);
+	if (rpiResp) {
+		$('#rpi').html(rpiResp);
+	} else {
+		getRPIValue(buildDashboard, PID, userData.LeagueSeason);
+	}
+
+	var trend = getTrend(PID, 'Ladder', userData.matchInfo);
+	$('#trend').html(trend);
 
 }
 
-function calcRPI(Player, Season) {
+function buildLadderStandings() {
+	var ladder = {};
 	$.ajax({
 		type: 'post',
 		url: 'ladder.php',
 		data: {
-			getRPIUser: Player,
-			season: Season
+			action: 'buildLadder',
+			Season: 0
 		},
 		success: function(data) {
-			return data;
+			ladder = $.parseJSON(data);
+			buildLadder(ladder);
 		}
 	});
 }
 
-render();
+function buildLadder(matchData) {
+	/*
+	var players = {
+		name: [],
+		record: [],
+		rpi: [],
+		trend: []
+	};
+	for (var i = 0; i < matchData.players.length; i++) {
+		players.name.push(matchData.players[i].Name);
+		players.record.push(buildRecord(matchData.players[i].PlayerID, "Ladder", matchData.matches));
+		players.rpi.push('RPI');
+		players.trend.push(getTrend(matchData.players[i].PlayerID, "Ladder", matchData.matches));
+	};
+	*/
+	console.log(matchData);
+	for (var i = 0; i < matchData.players.length; i++) {
+		var rank = i+1;
+		matches = [];
+		for (var j = 0; j < matchData.matches.length; j++) {
+			if (matchData.players[i].PlayerID == matchData.matches[j].ChallengerID || matchData.players[i].PlayerID == matchData.matches[j].DefenderID) {
+				matches.push(matchData.matches[j]);
+			}
+		};
+		console.log(matches);
+		row = '<tr><td>' + rank + '</td><td>' + matchData.players[i].Name + '</td><td>' + buildRecord(matchData.players[i].PlayerID, "Ladder", matches) + '</td><td> RPI </td><td>' + getTrend(matchData.players[i].PlayerID, "Ladder", matches) + '</td></tr>';
+		$('.currentStandings').append(row);
+	};
+}

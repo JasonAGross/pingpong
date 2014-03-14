@@ -1,13 +1,22 @@
 <?php
-	
-	require_once('config.php');
 
-	if ($_POST['activeUser']) {
-		$user = $_POST['activeUser'];
-		$userID = '';
-		$playerInfo = array();
-		$matchInfo = array();
-		$history = array();
+	session_start();
+
+	if ($_SESSION['status'] === false) {
+		header("Location: index.html");
+		die();
+	}
+	
+	include 'functions.php';
+
+	ChromePhp::log($_SESSION);
+
+	$userID = '';
+	$playerInfo = array();
+	$matchInfo = array();
+
+	if ($_SESSION['user']) {
+		$user = $_SESSION['user'];
 		$con=mysqli_connect("localhost", $dbUser, $dbPass, $dbTable);
 
 		$playerResult = mysqli_query($con,"SELECT * FROM Players WHERE Players.Email = '$user' LIMIT 1");
@@ -20,36 +29,17 @@
 		while($row = mysqli_fetch_assoc($matchResult)) {
 			$matchInfo[] = $row;
 		}
-
-		$historyResult = mysqli_query($con,"SELECT * FROM History WHERE PlayerID = '$userID'");
-		while($row = mysqli_fetch_assoc($historyResult)) {
-			$history[] = $row;
-		}
-
-		$combined = array(
-			"playerInfo" => $playerInfo,
-			"matchInfo" => $matchInfo,
-			"history" => $history
-		);
-		echo json_encode($combined);
-		exit;
 	}
+	
+	ChromePhp::log($playerInfo);
 
 ?>
 
 <?php include_once('header.php') ?>
 
 <div class="wrapper dashboard">
-	<nav class="primaryNav">
-		<ul>
-			<li><a href="#">My Dashboard</a></li>
-			<li><a href="#">League Standings</a></li>
-			<li><a href="#">Ladder Standings</a></li>
-			<li><a href="#">History</a></li>
-		</ul>
-	</nav>
 	
-	<h1>HxPPL - Dashboard</h1>
+	<h1>My Dashboard</h1>
 
 	<div class="seasonInfo">
 		<h3>Season Snapshot</h3>
@@ -69,40 +59,55 @@
 				</td>
 			</tr>
 			<tr>
-				<td id="enrollment">
+				<td>
+					<?php if($playerInfo['LeagueSeason'] === '') { echo 'Not Enrolled'; } else { echo 'Season '.$playerInfo['LeagueSeason']; } ?>
 				</td>
-				<td id="leagueRecord">
+				<td>
+					<?php echo getRecord($playerInfo['PlayerID'], $playerInfo['LeagueSeason'], 'League'); ?>
 				</td>
-				<td id="rank">
+				<td>
+					<?php echo getRank($playerInfo['PlayerID'], $playerInfo['LeagueSeason'], 'League'); ?>
 				</td>
-				<td id="matches">
+				<td>
+					<?php echo getRemainingMatches($playerInfo['PlayerID'], $matchInfo); ?>
 				</td>
 			</tr>
 		</table>
 
+		<h3>Ladder Snapshot</h3>
 		<table cellpadding="0" cellspacing="0" class="dataTable ladderTable">
 			<tr class="header">
 				<td>
 					Ladder Record
 				</td>
 				<td>
-					RPI
+					Rank
 				</td>
 				<td>
-					SOS
+					Score
+				</td>
+				<td>
+					RPI
 				</td>
 				<td>
 					Trend
 				</td>
 			</tr>
 			<tr>
-				<td id="ladderRecord">
+				<td>
+					<?php echo getRecord($playerInfo['PlayerID'], $playerInfo['LadderSeason'], 'Ladder'); ?>
 				</td>
-				<td id="rpi">
+				<td>
+					<?php echo getRank($playerInfo['PlayerID'], $playerInfo['LadderSeason'], 'Ladder'); ?>
 				</td>
-				<td id="sos">
+				<td>
+					<?php echo $playerInfo['Score']; ?>
 				</td>
-				<td id="trend">
+				<td>
+					<?php echo getRPI($playerInfo['PlayerID'], $playerInfo['LadderSeason'], 'Ladder'); ?>
+				</td>
+				<td>
+					<?php echo getTrend($playerInfo['PlayerID'], $playerInfo['LadderSeason'], 'Ladder'); ?>
 				</td>
 			</tr>
 		</table>
