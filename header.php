@@ -23,11 +23,9 @@
 			<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
 		<![endif]-->
 
-	<nav class="primaryNav">
+	<nav class="primaryNav clearfix">
+		<span id="mainLogo">Hx Ping Pong</span>
 		<ul>
-			<li><a href="dashboard.php">My Dashboard</a></li>
-			<li><a href="league.php">League Standings</a></li>
-			<li><a href="ladder.php">Ladder Standings</a></li>
-			<li><a href="history.php">History</a></li>
+			<li><a href="dashboard.php">My Dashboard</a></li><li><a href="league.php">League Standings</a></li><li><a href="ladder.php">Ladder Standings</a></li><li><a href="history.php">History</a></li><?php if($_SESSION['Access'] == 2) { ?><li><a href="admin.php">Admin</a></li><?php } ?>
 		</ul>
 	</nav>

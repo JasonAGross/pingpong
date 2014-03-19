@@ -18,7 +18,19 @@ function array_flatten($array) {
 		} 
 	} 
 	return $result; 
-} 
+}
+
+function getName($player) {
+	global $dbUser, $dbPass, $dbTable;
+	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
+	$name = '';
+	$playerResult = mysqli_query($con,"SELECT Name FROM Players WHERE PlayerID = '$player' LIMIT 1");
+	while($row = mysqli_fetch_assoc($playerResult)) {
+		$name = $row['Name'];
+	}
+
+	return $name;
+}
 
 // Get the win/loss ratio for a given player. $matches should be an array of all matches this player has participated in.
 function getWinRatio($player, $matches) {
@@ -63,7 +75,7 @@ function getRecord($player, $season, $type) {
 function getRemainingMatches($player, $matches) {
 	$remaining = 0;
 	foreach ($matches as $key => $value) {
-		if ($value['Status'] != 'Complete') {
+		if ($value['Status'] != 'Complete' && $value['MatchType'] == 'League') {
 			$remaining++;
 		}
 	}
@@ -225,6 +237,51 @@ function getRank($player, $season, $type) {
 			}
 		}
 	}
+}
+
+// Given the logged in user and a potential opponent, check for current matchups and see what actions we can perform
+function getActions($user, $opponent, $type) {
+	global $dbUser, $dbPass, $dbTable;
+	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
+
+	$playerResult = mysqli_query($con,"SELECT PlayerID FROM Players WHERE Email = '$user' LIMIT 1");
+	$row = mysqli_fetch_assoc($playerResult);
+	$player = $row['PlayerID'];
+
+	// If we are trying to compare the logged in user with themselves on the list kill this function
+	if ($player == $opponent) {
+		return false;
+	}
+
+	// Find any matches these two have
+	$matchups = array();
+
+	$matchResult = mysqli_query($con,"SELECT MatchID, ChallengerID, DefenderID, Status FROM Games WHERE (ChallengerID = '$player' OR DefenderID = '$player') AND (ChallengerID = '$opponent' OR DefenderID = '$opponent') AND (Status = 'Pending' OR Status = 'Issued')");
+	while($row = mysqli_fetch_assoc($matchResult)) {
+		$matchups[] = $row;
+	}
+
+	if (count($matchups) > 0) {
+		foreach ($matchups as $key => $value) {
+			if ($matchups[$key]['Status'] == 'Pending') {
+				if ($matchups[$key]['ChallengerID'] == $player) {
+					$actions = '<button class="btn" onclick="reportMatch(' . $matchups[$key]['MatchID'] . ',' . $matchups[$key]['ChallengerID'] . ',' . $matchups[$key]['DefenderID'] . ',\'' . getName($opponent) . '\',\'Ladder\',\'Challenge\')">Report Match</button>';
+				} else {
+					$actions = '<button class="btn" onclick="reportMatch(' . $matchups[$key]['MatchID'] . ',' . $matchups[$key]['DefenderID'] . ',' . $matchups[$key]['ChallengerID'] . ',\'' . getName($opponent) . '\',\'Ladder\',\'Defend\')">Report Match</button>';
+				}
+			} else if ($matchups[$key]['Status'] == 'Issued') {
+				if ($matchups[$key]['ChallengerID'] == $player) {
+					$actions = '<button class="btn" onclick="withdrawChallenge(' . $matchups[$key]['MatchID'] . ')">Withdraw</button>';
+				} else {
+					$actions = '<button class="btn" onclick="acceptChallenge()">Accept</button><button class="btn" onclick="refuseChallenge()">Refuse</button>';
+				}
+			}
+		}
+	} else {
+		$actions = '<button class="btn" onclick="issueChallenge(' . $player . ',' . $opponent . ',\'' . getName($opponent) . '\',\'Ladder\')">Issue Challenge</button>';
+	}
+	
+	return $actions;
 }
 
 ?>

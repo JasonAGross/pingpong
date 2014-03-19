@@ -51,7 +51,7 @@
 				<p>Hey <span id="fName"></span>, we don't have any matches for this account in our system. If you have already registered please switch accounts. Otherwise, please confirm your name and email address and we'll get an account set up for you.</p>
 
 				<div class="registrationForm">
-					<form name="registration" action="" method="POST">
+					<form name="registration" action="signin.php" method="POST">
 						<label for="name">Full Name</label>
 						<input type="text" name="name" id="regName" />
 						<label for="email">Email Address</label>
@@ -106,7 +106,7 @@
 												if (userData.enrolled) {
 													window.parent.location.href = 'dashboard.php';
 												} else {
-													$('.registrationForm').show();
+													$('.register').show();
 													$('#regName').attr('value', userData.userName);
 													$('#regEmail').attr('value', userData.userEmail);
 												}

@@ -9,8 +9,6 @@
 	
 	include 'functions.php';
 
-	ChromePhp::log($_SESSION);
-
 	$userID = '';
 	$playerInfo = array();
 	$matchInfo = array();
@@ -30,16 +28,16 @@
 			$matchInfo[] = $row;
 		}
 	}
-	
-	ChromePhp::log($playerInfo);
+
+	$_SESSION['Access'] = $playerInfo['Access'];
+
+	ChromePhp::log($matchInfo);
 
 ?>
 
 <?php include_once('header.php') ?>
 
-<div class="wrapper dashboard">
-	
-	<h1>My Dashboard</h1>
+<div class="wrapper dashboard clearfix">
 
 	<div class="seasonInfo">
 		<h3>Season Snapshot</h3>
@@ -117,6 +115,68 @@
 		<a href="#" class="dashboardAction"><span class="buttonIcon icon-hammer"></span>Issue a Ladder Challenge</a>
 		<a href="#" class="dashboardAction"><span class="buttonIcon icon-trophy"></span>Signup For A League</a>
 	</div>
+
+	<div class="eventFeed">
+		<?php
+		$ladderMatches = array();
+		$leagueMatches = array();
+		$con=mysqli_connect("localhost", $dbUser, $dbPass, $dbTable);
+
+		$ladderResult = mysqli_query($con,"SELECT MatchID, ChallengerID, DefenderID, Status FROM Games 
+											WHERE (ChallengerID = '$userID' OR DefenderID = '$userID')
+											AND MatchType = 'Ladder' 
+											AND (Status = 'Pending' OR Status = 'Issued')");
+		while($row = mysqli_fetch_assoc($ladderResult)) {
+			$ladderMatches[] = $row;
+		}
+
+		$leagueResult = mysqli_query($con,"SELECT MatchID, ChallengerID, DefenderID, Status FROM Games 
+											WHERE (ChallengerID = '$userID' OR DefenderID = '$userID')
+											AND MatchType = 'League' 
+											AND Status = 'Pending'");
+		while($row = mysqli_fetch_assoc($leagueResult)) {
+			$leagueMatches[] = $row;
+		}
+
+		if (count($ladderMatches) > 0) {
+
+			?>
+			<h3>Challenge Feed</h3>
+			<ul class="pendingMatches">
+				<?php
+				foreach ($ladderMatches as $key => $value) {
+					if ($ladderMatches[$key]['ChallengerID'] == $userID) {
+						echo '<li class="alertGreen clearfix">' . getName($ladderMatches[$key]['DefenderID']) . ' has accepted your challenge. <a href="#" onclick="reportMatch(' . $ladderMatches[$key]['MatchID'] . ',' . $ladderMatches[$key]['ChallengerID'] . ',' . $ladderMatches[$key]['DefenderID'] . ',\'' . getName($ladderMatches[$key]['DefenderID']) . '\',\'Ladder\',\'Challenge\')" class="btn">Report</a></li>';
+					} else {
+						echo '<li class="alertGreen clearfix">You have an accepted challenge from ' . getName($ladderMatches[$key]['ChallengerID']) . '<a href="#" onclick="reportMatch(' . $ladderMatches[$key]['MatchID'] . ',' . $ladderMatches[$key]['DefenderID'] . ',' . $ladderMatches[$key]['ChallengerID'] . ',\'' . getName($ladderMatches[$key]['ChallengerID']) . '\',\'Ladder\',\'Defend\')" class="btn">Report</a></li>';
+					}
+				}
+				?>
+			</ul>
+			<?php
+		}
+		if (count($leagueMatches) > 0) {
+			?>
+			<h3>League Matchups</h3>
+			<ul class="pendingMatches">
+				<?php
+				foreach ($leagueMatches as $key => $value) {
+					if ($leagueMatches[$key]['ChallengerID'] == $userID) {
+						echo '<li class="alertGreen clearfix">' . getName($leagueMatches[$key]['DefenderID']) . ' has accepted your challenge.<a href="#" class="btn">Report</a></li>';
+					} else {
+						echo '<li class="alertGreen clearfix">You have an accepted challenge from ' . getName($leagueMatches[$key]['ChallengerID']) . '<a href="#" class="btn">Report</a></li>';
+					}
+				}
+				?>
+			</ul>
+			<?php
+		}
+		if (count($ladderMatches) == 0 && count($leagueMatches) == 0) {
+			echo '<p>You have no pending matches. Issue a ladder challenge or signup for the next league season!</p>';
+		}
+		?>
+	</div>
+
 </div>
 
 <?php include_once('footer.php') ?>
