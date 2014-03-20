@@ -63,7 +63,7 @@ if ($_POST['behavior'] == 'issueChallenge') {
 }
 
 // Are we here to withdraw a challenge or remove a match?
-if ($_POST['behavior'] == 'removeMatch') {
+if ($_POST['behavior'] == 'removeMatch' || $_POST['behavior'] == 'confirmRefuse') {
 	global $dbUser, $dbPass, $dbTable;
 	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
 
@@ -72,6 +72,25 @@ if ($_POST['behavior'] == 'removeMatch') {
 	echo 'Success';
 
 	mysqli_close($con);
+}
+
+// Are we here to refuse or accept a challenge? 
+if ($_POST['behavior'] == 'acceptChallenge' || $_POST['behavior'] == 'refuseChallenge') {
+	global $dbUser, $dbPass, $dbTable;
+	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
+
+	if($_POST['behavior'] == 'acceptChallenge') {
+		$status = 'Pending';
+	} else {
+		$status = 'Refused';
+	}
+
+	mysqli_query($con,"UPDATE Games Set Status = '$status' WHERE MatchID = '$_POST[matchID]'");
+
+	echo 'Success';
+
+	mysqli_close($con);
+
 }
 
 ?>

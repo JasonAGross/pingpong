@@ -86,3 +86,69 @@ function removeMatch(matchID) {
 		}
 	});
 }
+
+function acceptChallenge(matchID) {
+	$.ajax({
+		type: 'post',
+		url: 'report.php',
+		data: {
+			behavior: 'acceptChallenge',
+			matchID: matchID
+		},
+		success: function(result) {
+			if (result == 'Success') {
+				$('.genericAction .popupContent').append('<p>Challenge accepted. Game on!</p>');
+				$('.genericAction').show();
+				setTimeout(function() {
+					location.reload();
+				}, 1500);
+			} else {
+				$('.genericAction .popupContent').append('<p class="alertRed">' + result + '</p>');
+			}
+		}
+	});
+}
+
+function refuseChallenge(matchID) {
+	$.ajax({
+		type: 'post',
+		url: 'report.php',
+		data: {
+			behavior: 'refuseChallenge',
+			matchID: matchID
+		},
+		success: function(result) {
+			if (result == 'Success') {
+				$('.genericAction .popupContent').append('<p>Challenge refused. Timid behavior noted.</p>');
+				$('.genericAction').show();
+				setTimeout(function() {
+					location.reload();
+				}, 1500);
+			} else {
+				$('.genericAction .popupContent').append('<p class="alertRed">' + result + '</p>');
+			}
+		}
+	});
+}
+
+function confirmRefuse(matchID) {
+	$.ajax({
+		type: 'post',
+		url: 'report.php',
+		data: {
+			behavior: 'confirmRefuse',
+			matchID: matchID
+		},
+		success: function(result) {
+			if (result == 'Success') {
+				$('.genericAction .popupContent').append('<p>Challenge removed. Good luck in your quest for a more worthy opponent.</p>');
+				$('.genericAction').show();
+				setTimeout(function() {
+					location.reload();
+				}, 1500);
+			} else {
+				$('.genericAction .popupContent').append('<p class="alertRed">' + result + '</p>');
+			}
+		}
+	});
+}

@@ -56,7 +56,7 @@
 			</tr>
 			<?php
 				foreach($playerList as $key => $value) {
-					echo '<tr><td>' . $playerList[$key]['rank'] . '</td><td>' . $playerList[$key]['Name'] . '</td><td>' . $playerList[$key]['record'] . '</td><td>' . $playerList[$key]['rpi']  . '</td><td>' . $playerList[$key]['Score'] . '</td><td>' . $playerList[$key]['trend'] . '</td><td>' . getActions($_SESSION['user'], $playerList[$key]['PlayerID'], 'Ladder') . '</td></tr>';
+					echo '<tr><td>' . $value['rank'] . '</td><td>' . $value['Name'] . '</td><td>' . $value['record'] . '</td><td>' . $value['rpi']  . '</td><td>' . $value['Score'] . '</td><td>' . $value['trend'] . '</td><td>' . getActions($_SESSION['user'], $value['PlayerID'], 'Ladder') . '</td></tr>';
 				}
 			?>
 		</table>

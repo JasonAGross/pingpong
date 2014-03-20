@@ -29,11 +29,11 @@ if ($_POST['status']['signed_in']) {
 	};
 
 	if (in_array($_POST['userEmail'], $playerList)) {
-		$userStatus['enrolled'] == true;
+		$userStatus['enrolled'] = true;
 	} else {
 		ChromePhp::log($playerList);
 		ChromePhp::log($_POST['userEmail']);
-		$userStatus['enrolled'] == false;
+		$userStatus['enrolled'] = false;
 	}
 
 	echo json_encode($userStatus);
@@ -43,6 +43,8 @@ if ($_POST['status']['signed_in']) {
 }
 
 if ($_POST['name']) {
+	global $dbUser, $dbPass, $dbTable;
+	$con=mysqli_connect("127.0.0.1", $dbUser, $dbPass, $dbTable);
 	mysqli_query($con, "INSERT INTO Players (Name, Email) VALUES ('$_POST[name]','$_POST[email]')");
 	mysqli_close($con);
 	header("Location: dashboard.php");

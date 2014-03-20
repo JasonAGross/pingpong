@@ -112,7 +112,7 @@
 
 		<h3>My Actions</h3>
 		<a href="#" class="dashboardAction"><span class="buttonIcon icon-signup"></span>Report a Match</a>
-		<a href="#" class="dashboardAction"><span class="buttonIcon icon-hammer"></span>Issue a Ladder Challenge</a>
+		<a href="ladder.php" class="dashboardAction"><span class="buttonIcon icon-hammer"></span>Issue a Ladder Challenge</a>
 		<a href="#" class="dashboardAction"><span class="buttonIcon icon-trophy"></span>Signup For A League</a>
 	</div>
 
@@ -145,10 +145,20 @@
 			<ul class="pendingMatches">
 				<?php
 				foreach ($ladderMatches as $key => $value) {
-					if ($ladderMatches[$key]['ChallengerID'] == $userID) {
-						echo '<li class="alertGreen clearfix">' . getName($ladderMatches[$key]['DefenderID']) . ' has accepted your challenge. <a href="#" onclick="reportMatch(' . $ladderMatches[$key]['MatchID'] . ',' . $ladderMatches[$key]['ChallengerID'] . ',' . $ladderMatches[$key]['DefenderID'] . ',\'' . getName($ladderMatches[$key]['DefenderID']) . '\',\'Ladder\',\'Challenge\')" class="btn">Report</a></li>';
-					} else {
-						echo '<li class="alertGreen clearfix">You have an accepted challenge from ' . getName($ladderMatches[$key]['ChallengerID']) . '<a href="#" onclick="reportMatch(' . $ladderMatches[$key]['MatchID'] . ',' . $ladderMatches[$key]['DefenderID'] . ',' . $ladderMatches[$key]['ChallengerID'] . ',\'' . getName($ladderMatches[$key]['ChallengerID']) . '\',\'Ladder\',\'Defend\')" class="btn">Report</a></li>';
+					if ($value['Status'] == 'Pending') {
+						if ($value['ChallengerID'] == $userID) {
+							echo '<li class="alertGreen clearfix">' . getName($value['DefenderID']) . ' has accepted your challenge. <a href="#" onclick="reportMatch(' . $value['MatchID'] . ',' . $value['ChallengerID'] . ',' . $value['DefenderID'] . ',\'' . getName($value['DefenderID']) . '\',\'Ladder\',\'Challenge\')" class="btn">Report</a></li>';
+						} else {
+							echo '<li class="alertGreen clearfix">You have an accepted challenge from ' . getName($value['ChallengerID']) . '<a href="#" onclick="reportMatch(' . $value['MatchID'] . ',' . $value['DefenderID'] . ',' . $value['ChallengerID'] . ',\'' . getName($value['ChallengerID']) . '\',\'Ladder\',\'Defend\')" class="btn">Report</a></li>';
+						}
+					} else if ($value['Status'] == 'Issued') {
+						if ($value['ChallengerID'] == $userID) {
+							echo '<li class="alertYellow clearfix">' . getName($value['DefenderID']) . ' has not yet accepted your challenge.</li>';
+						} else {
+							echo '<li class="alertRed clearfix">You have been challenged by ' . getName($value['ChallengerID']) . '<a class="btn" onclick="acceptChallenge(' . $value['MatchID'] . ')">Accept</a><a class="btn" onclick="refuseChallenge(' . $value['MatchID'] . ')">Refuse</a></li>';
+						}
+					} else if ($value['Status'] == 'Refused') {
+						echo '<li class="alertRed">' . getName($value['DefenderID']) . ' has refused your challenge. They are a coward. <a class="btn" onclick="confirmRefuse(' . $value['MatchID'] . ')">Well... Okay</a></li>';
 					}
 				}
 				?>
@@ -161,10 +171,10 @@
 			<ul class="pendingMatches">
 				<?php
 				foreach ($leagueMatches as $key => $value) {
-					if ($leagueMatches[$key]['ChallengerID'] == $userID) {
-						echo '<li class="alertGreen clearfix">' . getName($leagueMatches[$key]['DefenderID']) . ' has accepted your challenge.<a href="#" class="btn">Report</a></li>';
+					if ($value['ChallengerID'] == $userID) {
+						echo '<li class="alertGreen clearfix">' . getName($value['DefenderID']) . ' has accepted your challenge.<a href="#" class="btn">Report</a></li>';
 					} else {
-						echo '<li class="alertGreen clearfix">You have an accepted challenge from ' . getName($leagueMatches[$key]['ChallengerID']) . '<a href="#" class="btn">Report</a></li>';
+						echo '<li class="alertGreen clearfix">You have an accepted challenge from ' . getName($value['ChallengerID']) . '<a href="#" class="btn">Report</a></li>';
 					}
 				}
 				?>

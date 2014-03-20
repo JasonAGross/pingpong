@@ -172,6 +172,12 @@ textarea {
     background: #ffe5e5;
 }
 
+.alertYellow {
+    border: 1px solid #CDB306;
+    color: #a28d03;
+    background: #f8f4da;
+}
+
 .alertGreen {
     border: 1px solid #259004;
     color: #259004;

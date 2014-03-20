@@ -149,7 +149,7 @@ function getTrend($player, $season, $type) {
 	$matches = array();
 	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
 
-	$matchResult = mysqli_query($con,"SELECT * FROM Games WHERE SeasonID = '$season' AND MatchType = '$type' AND Status = 'Complete' AND (ChallengerID = '$player' OR DefenderID = '$player')");
+	$matchResult = mysqli_query($con,"SELECT * FROM Games WHERE SeasonID = '$season' AND MatchType = '$type' AND Status = 'Complete' AND (ChallengerID = '$player' OR DefenderID = '$player') ORDER BY PlayedOn DESC");
 	while($row = mysqli_fetch_assoc($matchResult)) {
 		$matches[] = $row;
 	}
@@ -263,17 +263,17 @@ function getActions($user, $opponent, $type) {
 
 	if (count($matchups) > 0) {
 		foreach ($matchups as $key => $value) {
-			if ($matchups[$key]['Status'] == 'Pending') {
-				if ($matchups[$key]['ChallengerID'] == $player) {
-					$actions = '<button class="btn" onclick="reportMatch(' . $matchups[$key]['MatchID'] . ',' . $matchups[$key]['ChallengerID'] . ',' . $matchups[$key]['DefenderID'] . ',\'' . getName($opponent) . '\',\'Ladder\',\'Challenge\')">Report Match</button>';
+			if ($value['Status'] == 'Pending') {
+				if ($value['ChallengerID'] == $player) {
+					$actions = '<button class="btn" onclick="reportMatch(' . $value['MatchID'] . ',' . $value['ChallengerID'] . ',' . $value['DefenderID'] . ',\'' . getName($opponent) . '\',\'Ladder\',\'Challenge\')">Report Match</button>';
 				} else {
-					$actions = '<button class="btn" onclick="reportMatch(' . $matchups[$key]['MatchID'] . ',' . $matchups[$key]['DefenderID'] . ',' . $matchups[$key]['ChallengerID'] . ',\'' . getName($opponent) . '\',\'Ladder\',\'Defend\')">Report Match</button>';
+					$actions = '<button class="btn" onclick="reportMatch(' . $value['MatchID'] . ',' . $value['DefenderID'] . ',' . $value['ChallengerID'] . ',\'' . getName($opponent) . '\',\'Ladder\',\'Defend\')">Report Match</button>';
 				}
-			} else if ($matchups[$key]['Status'] == 'Issued') {
-				if ($matchups[$key]['ChallengerID'] == $player) {
-					$actions = '<button class="btn" onclick="withdrawChallenge(' . $matchups[$key]['MatchID'] . ')">Withdraw</button>';
+			} else if ($value['Status'] == 'Issued') {
+				if ($value['ChallengerID'] == $player) {
+					$actions = '<button class="btn" onclick="withdrawChallenge(' . $value['MatchID'] . ')">Withdraw</button>';
 				} else {
-					$actions = '<button class="btn" onclick="acceptChallenge()">Accept</button><button class="btn" onclick="refuseChallenge()">Refuse</button>';
+					$actions = '<button class="btn" onclick="acceptChallenge(' . $value['MatchID'] . ')">Accept</button><button class="btn" onclick="refuseChallenge(' . $value['MatchID'] . ')">Refuse</button>';
 				}
 			}
 		}
