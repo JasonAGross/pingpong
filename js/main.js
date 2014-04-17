@@ -5,8 +5,8 @@ function reportMatch(matchID, player, opponent, opponentName, matchType, matchRo
 }
 
 function submitReport(matchID, player, opponent, matchType, matchRole) {
-	var playerScore = parseInt($('.playerRounds option:selected').val());
-	var opponentScore = parseInt($('.opponentRounds option:selected').val());
+	var playerScore = parseInt($('.playerRounds:visible option:selected').val());
+	var opponentScore = parseInt($('.opponentRounds:visible option:selected').val());
 	$.ajax({
 		type: 'post',
 		url: 'report.php',
@@ -20,8 +20,14 @@ function submitReport(matchID, player, opponent, matchType, matchRole) {
 			matchRole: matchRole
 		},
 		success: function(result) {
+			console.log(result);
 			if (result == 'Success') {
 				$('.reportMatch .popupContent').html('<h3>Match Reported</h3><p>Thanks for the report, your matches have been updated.</p>');
+				setTimeout(function() {
+					location.reload();
+				}, 2000);
+			} else if (result == 'Created') {
+				$('.reportGeneral .popupContent').html('<h3>Match Reported</h3><p>Thanks for the report, your matches have been updated.</p>');
 				setTimeout(function() {
 					location.reload();
 				}, 2000);

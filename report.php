@@ -13,10 +13,10 @@ ChromePhp::log($_POST);
 
 // Are we here to submit a challenge report?
 if ($_POST['behavior'] == 'submitScore') {
+
 	if ($_POST['playerScore'] + $_POST['opponentScore'] != 3) {
 		echo 'Match score does not add up to 3 rounds. Please check scores and try again';
-	} else {
-		$matchID = $_POST['matchID'];
+	} else {		
 		$playedOn = date('Y-m-d');
 		if ($_POST['matchRole'] == 'Challenge') {
 			$challengerID = $_POST['player'];
@@ -29,13 +29,27 @@ if ($_POST['behavior'] == 'submitScore') {
 			$defenderID = $_POST['player'];
 			$defenderScore = $_POST['playerScore'];
 		}
-		$con=mysqli_connect("localhost", $dbUser, $dbPass, $dbTable);
-		if (mysqli_connect_errno()) {
-			echo "Failed to connect to MySQL: " . mysqli_connect_error();
-		}
-		mysqli_query($con, "UPDATE Games SET ChallengerScore = '$challengerScore', DefenderScore = '$defenderScore', Status = 'Complete', PlayedOn = '$playedOn' WHERE MatchID = '$matchID'");
 
-		echo 'Success';
+		$con=mysqli_connect("localhost", $dbUser, $dbPass, $dbTable);
+
+		// Check if we are reporting an unchallenged match
+		if ($_POST['matchID'] == 'new') {
+
+			$globalResult = mysqli_query($con,"SELECT LadderSeason FROM Globals");
+			$grow = mysqli_fetch_assoc($globalResult);
+			$season = $grow['LadderSeason'];
+
+			mysqli_query($con, "INSERT INTO Games (SeasonID, ChallengerID, DefenderID, ChallengerScore, DefenderScore, MatchType, Status, PlayedOn) VALUES ('$season', '$challengerID','$defenderID','$challengerScore','$defenderScore','Ladder','Complete','$playedOn')");
+			
+			echo 'Created';
+		// Otherwise its a challenged match
+		} else {
+			$matchID = $_POST['matchID'];
+
+			mysqli_query($con, "UPDATE Games SET ChallengerScore = '$challengerScore', DefenderScore = '$defenderScore', Status = 'Complete', PlayedOn = '$playedOn' WHERE MatchID = '$matchID'");
+
+			echo 'Success';
+		}
 
 		mysqli_close($con);
 	}

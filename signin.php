@@ -2,7 +2,6 @@
 
 session_start();
 
-include 'ChromePhp.php';
 include 'config.php';
 
 if ($_POST['status']['signed_in']) {
@@ -31,8 +30,6 @@ if ($_POST['status']['signed_in']) {
 	if (in_array($_POST['userEmail'], $playerList)) {
 		$userStatus['enrolled'] = true;
 	} else {
-		ChromePhp::log($playerList);
-		ChromePhp::log($_POST['userEmail']);
 		$userStatus['enrolled'] = false;
 	}
 
@@ -45,7 +42,12 @@ if ($_POST['status']['signed_in']) {
 if ($_POST['name']) {
 	global $dbUser, $dbPass, $dbTable;
 	$con=mysqli_connect("127.0.0.1", $dbUser, $dbPass, $dbTable);
-	mysqli_query($con, "INSERT INTO Players (Name, Email) VALUES ('$_POST[name]','$_POST[email]')");
+
+	$globalResult = mysqli_query($con,"SELECT LadderSeason FROM Globals");
+	$row = mysqli_fetch_assoc($globalResult);
+	$ladder = $row['LadderSeason'];
+
+	mysqli_query($con, "INSERT INTO Players (Name, Email, LadderSeason) VALUES ('$_POST[name]','$_POST[email]','$ladder')");
 	mysqli_close($con);
 	header("Location: dashboard.php");
 }

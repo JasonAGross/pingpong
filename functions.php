@@ -3,6 +3,8 @@
 include 'config.php';
 include 'ChromePhp.php';
 
+error_reporting(E_ERROR);
+
 // General purpose function to make simplifying arrays easier.
 function array_flatten($array) { 
 	if (!is_array($array)) { 
@@ -149,7 +151,7 @@ function getTrend($player, $season, $type) {
 	$matches = array();
 	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
 
-	$matchResult = mysqli_query($con,"SELECT * FROM Games WHERE SeasonID = '$season' AND MatchType = '$type' AND Status = 'Complete' AND (ChallengerID = '$player' OR DefenderID = '$player') ORDER BY PlayedOn DESC");
+	$matchResult = mysqli_query($con,"SELECT * FROM Games WHERE SeasonID = '$season' AND MatchType = '$type' AND Status = 'Complete' AND (ChallengerID = '$player' OR DefenderID = '$player') ORDER BY MatchID DESC");
 	while($row = mysqli_fetch_assoc($matchResult)) {
 		$matches[] = $row;
 	}
