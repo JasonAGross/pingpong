@@ -50,7 +50,63 @@
 	</div>
 
 	<div class="primaryContent">
-		<h3>Recent Activity</h3>
+		<h3>Recent Ladder Matches</h3>
+		<table cellpadding="0" cellspacing="0" class="dataTable">
+			<tr class="header">
+				<td>Match Date</td>
+				<td>Challenger / Score</td>
+				<td>Defender / Score</td>
+				<td>Admin Actions</td>
+			</tr>
+			<?php 
+
+			$ladderRecent = mysqli_query($con,"SELECT * FROM Games WHERE MatchType = 'Ladder' AND SeasonID = '$thisLadderSeason' AND Status = 'Complete' ORDER BY PlayedOn DESC LIMIT 10");
+			while($row = mysqli_fetch_assoc($ladderRecent)) {
+				?>
+				<tr>
+					<td><?php echo $row['PlayedOn']; ?></td>
+					<?php if ($row['ChallengerScore'] > $row['DefenderScore']) { ?>
+						<td class="winner"><?php echo getName($row['ChallengerID']) . ' / ' . $row['ChallengerScore']; ?></td>
+						<td><?php echo getName($row['DefenderID']) . ' / ' . $row['DefenderScore']; ?></td>
+					<?php } else { ?>
+						<td><?php echo getName($row['ChallengerID']) . ' / ' . $row['ChallengerScore']; ?></td>
+						<td class="winner"><?php echo getName($row['DefenderID']) . ' / ' . $row['DefenderScore']; ?></td>
+					<?php } ?>
+					<td><button class="btn">Reset Match</button><button class="btn">Remove Match</button></td>
+				</tr>
+				<?php
+			}
+			?>
+		</table>
+
+		<h3>Recent League Matches</h3>
+		<table cellpadding="0" cellspacing="0" class="dataTable">
+			<tr class="header">
+				<td>Match Date</td>
+				<td>Challenger / Score</td>
+				<td>Defender / Score</td>
+				<td>Admin Actions</td>
+			</tr>
+			<?php 
+
+			$leagueRecent = mysqli_query($con,"SELECT * FROM Games WHERE MatchType = 'League' AND SeasonID = '$thisLeagueSeason' AND Status = 'Complete' ORDER BY PlayedOn DESC LIMIT 10");
+			while($row = mysqli_fetch_assoc($leagueRecent)) {
+				?>
+				<tr>
+					<td><?php echo $row['PlayedOn']; ?></td>
+					<?php if ($row['ChallengerScore'] > $row['DefenderScore']) { ?>
+						<td class="winner"><?php echo getName($row['ChallengerID']) . ' / ' . $row['ChallengerScore']; ?></td>
+						<td><?php echo getName($row['DefenderID']) . ' / ' . $row['DefenderScore']; ?></td>
+					<?php } else { ?>
+						<td><?php echo getName($row['ChallengerID']) . ' / ' . $row['ChallengerScore']; ?></td>
+						<td class="winner"><?php echo getName($row['DefenderID']) . ' / ' . $row['DefenderScore']; ?></td>
+					<?php } ?>
+					<td><button class="btn">Reset Match</button></td>
+				</tr>
+				<?php
+			}
+			?>
+		</table>
 	</div>
 
 </div>

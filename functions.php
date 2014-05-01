@@ -23,8 +23,7 @@ function array_flatten($array) {
 }
 
 function getName($player) {
-	global $dbUser, $dbPass, $dbTable;
-	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
+	global $dbUser, $dbPass, $dbTable, $con;
 	$name = '';
 	$playerResult = mysqli_query($con,"SELECT Name FROM Players WHERE PlayerID = '$player' LIMIT 1");
 	while($row = mysqli_fetch_assoc($playerResult)) {
@@ -51,9 +50,8 @@ function getWinRatio($player, $matches) {
 
 // Grab just the pure win and loss record for a given player, season, and season type.
 function getRecord($player, $season, $type) {
-	global $dbUser, $dbPass, $dbTable;
+	global $dbUser, $dbPass, $dbTable, $con;
 	$matches = array();
-	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
 
 	$matchResult = mysqli_query($con,"SELECT * FROM Games WHERE SeasonID = '$season' AND MatchType = '$type' AND Status = 'Complete' AND (ChallengerID = '$player' OR DefenderID = '$player')");
 	while($row = mysqli_fetch_assoc($matchResult)) {
@@ -103,9 +101,8 @@ function getOpponents($player, $matches) {
 
 // Build an RPI calculation for a player in a given season. 
 function getRPI($player, $season, $type) {
-	global $dbUser, $dbPass, $dbTable;
+	global $dbUser, $dbPass, $dbTable, $con;
 	$matches = array();
-	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
 
 	$matchResult = mysqli_query($con,"SELECT * FROM Games WHERE SeasonID = '$season' AND MatchType = '$type' AND Status = 'Complete'");
 	while($row = mysqli_fetch_assoc($matchResult)) {
@@ -147,9 +144,8 @@ function getRPI($player, $season, $type) {
 
 // Calculate the latest trend for a user, current winning or losing streak
 function getTrend($player, $season, $type) {
-	global $dbUser, $dbPass, $dbTable;
+	global $dbUser, $dbPass, $dbTable, $con;
 	$matches = array();
-	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
 
 	$matchResult = mysqli_query($con,"SELECT * FROM Games WHERE SeasonID = '$season' AND MatchType = '$type' AND Status = 'Complete' AND (ChallengerID = '$player' OR DefenderID = '$player') ORDER BY MatchID DESC");
 	while($row = mysqli_fetch_assoc($matchResult)) {
@@ -188,9 +184,9 @@ function getTrend($player, $season, $type) {
 // Find a players rank for a given season and season type
 function getRank($player, $season, $type) {
 	if ($type == 'Ladder') { // We rank ladder standings by RPI
-		global $dbUser, $dbPass, $dbTable;
+		global $dbUser, $dbPass, $dbTable, $con;
 		$players = array();
-		$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
+
 
 		$playerResult = mysqli_query($con,"SELECT PlayerID FROM Players WHERE LadderSeason = '$season'");
 		while($row = mysqli_fetch_assoc($playerResult)) {
@@ -214,9 +210,9 @@ function getRank($player, $season, $type) {
 		}
 
 	} else { // We rank league standings by least number of losses with an RPI tie-breaker
-		global $dbUser, $dbPass, $dbTable;
+		global $dbUser, $dbPass, $dbTable, $con;
 		$players = array();
-		$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
+
 
 		$playerResult = mysqli_query($con,"SELECT PlayerID FROM Players WHERE LadderSeason = '$season'");
 		while($row = mysqli_fetch_assoc($playerResult)) {
@@ -243,8 +239,7 @@ function getRank($player, $season, $type) {
 
 // Given the logged in user and a potential opponent, check for current matchups and see what actions we can perform
 function getActions($user, $opponent, $type) {
-	global $dbUser, $dbPass, $dbTable;
-	$con=mysqli_connect('localhost', $dbUser, $dbPass, $dbTable);
+	global $dbUser, $dbPass, $dbTable, $con;
 
 	$playerResult = mysqli_query($con,"SELECT PlayerID FROM Players WHERE Email = '$user' LIMIT 1");
 	$row = mysqli_fetch_assoc($playerResult);
